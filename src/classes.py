@@ -15,10 +15,6 @@ class Node(object):
     def add_child(self, new_child):
         self.children.append(new_child)
 
-    @property
-    def children(self):
-        return self.children
-
     def get_direction(self):
         if self.parent is None:
             return None
