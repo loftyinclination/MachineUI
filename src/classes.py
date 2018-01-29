@@ -38,13 +38,15 @@ class Node(object):
         self.x_pos = self.parent.x_pos + (norm * math.cos(theta + parent_theta))
         self.y_pos = self.parent.y_pos + (norm * math.sin(theta + parent_theta))
 
-    def split(self, children, angle, angle_step, length, length_var):
+    def split(self, children, angle, angle_step, length, length_var, straight=False):
         """produce {children} new nodes, with {self} as parent
            angle: +ve max value of angle from current direction.
            angle_step: angle can have values of n * angle_step
            returns new children as a list"""
         steps = int(math.pi / angle_step)
         angles = [n * angle_step for n in range(-steps, steps) if abs(n * angle_step) <= angle]
+        if not straight:
+            angles.remove(0)
         # print(angles)
         new_children = []
 
