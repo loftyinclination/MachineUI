@@ -18,6 +18,11 @@ class Node(object):
     def get_direction(self):
         if self.parent is None:
             return None
+        elif (self.parent.x_pos == self.x_pos):
+            if (self.parent.y_pos > self.y_pos):
+                return math.pi * 0.5
+            else:
+                return math.pi * 1.5
         else:
             theta = math.atan((self.parent.y_pos - self.y_pos) / (self.parent.x_pos - self.x_pos))
             # print(f"theta {theta},
