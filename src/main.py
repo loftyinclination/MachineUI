@@ -4,29 +4,34 @@ import math
 from classes import Node
 
 def main(cla):
-    tree = [Node(None, 0, 0)]
+    tree = [Node(None, 0.0, 0.0)]
 
     tree += tree[0].split(random.randrange(1, 4, 1), math.pi / 4, math.pi / 4, cla.length, cla.l_var, straight=True)
     visited = [tree[0]]
 
-    while (_area(tree) < cla.area):
-        weights = [cla.branching,
-                   cla.terminating, 
-                   (1 - (cla.branching + cla.terminating))             / (cla.ratio + 1),
-                   (1 - (cla.branching + cla.terminating)) * cla.ratio / (cla.ratio + 1)]
-        
+    choices = [
+        lambda x: [3, math.pi, x[2], x[3], x[4]], 
+        lambda x: [0, x[1], x[2], x[3], x[4]], 
+        lambda x: [1, x[1], x[2], 0.1,  0],
+        lambda x: x
+    ]
+    weights = [
+        cla.branching,
+        cla.terminating, 
+        (1 - (cla.branching + cla.terminating))             / (cla.ratio + 1),
+        (1 - (cla.branching + cla.terminating)) * cla.ratio / (cla.ratio + 1)
+    ]
+
+    while (_area(tree) < cla.area and set(tree) != set(visited)):
         for x in [x for x in tree if x not in visited]:
-            default = [1, math.pi, math.pi / 4, cla.length, cla.l_var]
-            default = random.choices([lambda x: [3, x[1], x[2], x[3], x[4]], 
-                                      lambda x: [0, x[1], x[2], x[3], x[4]], 
-                                      lambda x: [1, x[1], x[2], 0.1,  0],
-                                      lambda x: x], weights=weights)[0](default)
+            default = [1, math.pi / 2, math.pi / 4, cla.length, cla.l_var]
+            default = random.choices(choices, weights=weights)[0](default)
             # print(default)
             tree += x.split(default[0], default[1], default[2], default[3], default[4])
             visited.append(x)
 
-        print(tree)
-        exit()
+    print([str(x) for x in tree])
+    print(len(tree), end='\n\n')
 
 def _area(tree):
     x_values = [i.x_pos for i in tree]

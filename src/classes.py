@@ -12,6 +12,12 @@ class Node(object):
     def __repr__(self):
         return f"Node({self.parent}, {self.x_pos}, {self.y_pos})"
 
+    def __str__(self):
+        if self.parent is None:
+            return f"Node({self.x_pos:.4}, {self.y_pos:.4}"
+        else:
+            return f"Node(Node({self.parent.x_pos:.4}, {self.parent.y_pos:.4}), {self.x_pos:.4}, {self.y_pos:.4})"
+
     def add_child(self, new_child):
         self.children.append(new_child)
 
@@ -22,7 +28,7 @@ class Node(object):
             if (self.parent.y_pos > self.y_pos):
                 return math.pi * 0.5
             else:
-                return math.pi * 1.5
+                return math.pi * 1.5    
         else:
             theta = math.atan((self.parent.y_pos - self.y_pos) / (self.parent.x_pos - self.x_pos))
             # print(f"theta {theta},
