@@ -24,6 +24,18 @@ class Node(object):
         elif type(object) == Node:
             return Node(self.parent, self.x_pos + object.x_pos, self.y_pos + object.y_pos)
 
+    def __mul__(self, object):
+        if type(object) == tuple:
+            return Node(self.parent, self.x_pos * other[0], self.y_pos * other[1])
+        elif type(object) == Node:
+            return Node(self.parent, self.x_pos * object.x_pos, self.y_pos * object.y_pos)
+
+    def __abs__(self):
+        return math.sqrt(self.x_pos ** 2 + self.y_pos ** 2)
+
+    def pos(self):
+        return (self.x_pos, self.y_pos)
+
     def add_child(self, new_child):
         self.children.append(new_child)
 
