@@ -2,6 +2,7 @@ import argparse
 import random
 import math
 from classes import Node
+from PIL import Image, ImageDraw, ImageColor
 
 def main(cla):
     tree = [Node(None, 0.0, 0.0)]
@@ -32,11 +33,21 @@ def main(cla):
 
     print([str(x) for x in tree])
     print(len(tree), end='\n\n')
+    
+    draw(cla.seed, tree)
 
 def _area(tree):
     x_values = [i.x_pos for i in tree]
     y_values = [i.y_pos for i in tree]
     return [max(x_values) - min(x_values), max(y_values) - min(y_values)]
+    
+def draw(seed, tree):
+  im = Image.new('L', tuple([int(x) * 10 for x in _area(tree)])) #convert type of area to tuple here - fewer checks
+  draw = ImageDraw.Draw(im)
+  for x in [x for x in tree if x.parent is not None]:
+    draw.line([(x.parent.x_pos, x.parent.y_pos), (x.x_pos, x.y_pos)], fill=255, width=2)
+  del(draw)
+  im.save(f"seed {seed}", format="PNG")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Machine UI Generator')

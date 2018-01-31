@@ -18,6 +18,12 @@ class Node(object):
         else:
             return f"Node(Node({self.parent.x_pos:.4}, {self.parent.y_pos:.4}), {self.x_pos:.4}, {self.y_pos:.4})"
 
+    def __add__(self, object):
+        if type(object) == tuple:
+            return Node(self.parent, self.x_pos + other[0], self.y_pos + other[1])
+        elif type(object) == Node:
+            return Node(self.parent, self.x_pos + object.x_pos, self.y_pos + object.y_pos)
+
     def add_child(self, new_child):
         self.children.append(new_child)
 
