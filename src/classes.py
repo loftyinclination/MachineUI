@@ -1,12 +1,13 @@
 import math
 import random
+import numbers
 
 class Node(object):
 
     def __init__(self, parent, x_pos, y_pos):
         self.parent = parent
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+        self.x_pos = float(x_pos)
+        self.y_pos = float(y_pos)
         self.children = []
 
     def __repr__(self):
@@ -14,21 +15,31 @@ class Node(object):
 
     def __str__(self):
         if self.parent is None:
-            return f"Node({self.x_pos:.4}, {self.y_pos:.4}"
+            return f"Node(None, {self.x_pos:.4}, {self.y_pos:.4})"
         else:
             return f"Node(Node({self.parent.x_pos:.4}, {self.parent.y_pos:.4}), {self.x_pos:.4}, {self.y_pos:.4})"
 
     def __add__(self, object):
         if type(object) == tuple:
-            return Node(self.parent, self.x_pos + other[0], self.y_pos + other[1])
+            return Node(self.parent, self.x_pos + object[0], self.y_pos + object[1])
         elif type(object) == Node:
             return Node(self.parent, self.x_pos + object.x_pos, self.y_pos + object.y_pos)
+        else:
+            raise TypeError
 
-    def __mul__(self, object):
+    def __sub__(self, object):
         if type(object) == tuple:
-            return Node(self.parent, self.x_pos * other[0], self.y_pos * other[1])
+            return Node(self.parent, self.x_pos - object[0], self.y_pos - object[1])
         elif type(object) == Node:
-            return Node(self.parent, self.x_pos * object.x_pos, self.y_pos * object.y_pos)
+            return Node(self.parent, self.x_pos - object.x_pos, self.y_pos - object.y_pos)
+        else:
+            raise TypeError
+
+    def __mul__(self, coef):
+        if isinstance(coef, numbers.Number):
+            return Node(self.parent, self.x_pos * coef, self.y_pos * coef)
+        else:
+            raise TypeError
 
     def __abs__(self):
         return math.sqrt(self.x_pos ** 2 + self.y_pos ** 2)
@@ -73,14 +84,16 @@ class Node(object):
            angle_step: angle can have values of n * angle_step
            returns new children as a list"""
         steps = int(math.pi / angle_step)
-        angles = [n * angle_step for n in range(-steps, steps) if abs(n * angle_step) <= angle]
-        if not straight:
-            angles.remove(0)
-        # print(angles)
+
+        # angle_mag = [n / steps for n in range(-steps, steps) if straight or (n != 0 or n != steps)]
+        # angles = [n * math.pi for n in angle_mag if abs(n * math.pi) <= angle]
+        angles = [n * math.pi / steps for n in range(-steps, steps) if (straight or (n != 0 or n != steps)) and (abs(n * math.pi / steps) <= angle)]
+        print(angles)
+
         new_children = []
 
         for _ in range(children):
-            new_child = Node(self, None, None)
+            new_child = Node(self, 0, 0)
 
             new_direction = random.choice(angles)
             new_length = random.gauss(length, length_var)
