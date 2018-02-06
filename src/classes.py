@@ -24,6 +24,14 @@ class Node(object):
             return Node(self.parent, self.x_pos + object[0], self.y_pos + object[1])
         elif type(object) == Node:
             return Node(self.parent, self.x_pos + object.x_pos, self.y_pos + object.y_pos)
+        elif isinstance(object, numbers.Number):
+            return abs(self) + object
+        else:
+            raise TypeError
+    
+    def __radd__(self, object):
+        if isinstance(object, numbers.Number):
+            return abs(self) + object
         else:
             raise TypeError
 
@@ -42,7 +50,10 @@ class Node(object):
             raise TypeError
 
     def __abs__(self):
-        return math.sqrt(self.x_pos ** 2 + self.y_pos ** 2)
+        if self.parent is None:
+            return 0
+        else:
+            return math.sqrt((self.x_pos - self.parent.x_pos) ** 2 + (self.y_pos - self.parent.y_pos) ** 2)
 
     def pos(self):
         return (self.x_pos, self.y_pos)
@@ -88,7 +99,7 @@ class Node(object):
         # angle_mag = [n / steps for n in range(-steps, steps) if straight or (n != 0 or n != steps)]
         # angles = [n * math.pi for n in angle_mag if abs(n * math.pi) <= angle]
         angles = [n * math.pi / steps for n in range(-steps, steps) if (straight or (n != 0 or n != steps)) and (abs(n * math.pi / steps) <= angle)]
-        print(angles)
+        # print(angles)
 
         new_children = []
 
