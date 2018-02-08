@@ -43,9 +43,7 @@ def _area(tree):
     y_values = [i.y_pos for i in tree]
     return [max(x_values) - min(x_values), max(y_values) - min(y_values)]
     
-def draw(seed, tree):
-    scale = 100
-    
+def draw(seed, tree, scale=100, _width=2):
     # area = tuple(int(x) * scale + 10 for x in _area(tree))
     im = Image.new('RGB', (1010, 1010)) #convert type of area to tuple here - fewer checks
     draw = ImageDraw.Draw(im)
@@ -58,12 +56,12 @@ def draw(seed, tree):
         if x.parent is not None:
             x = (x - smallest) * scale + (5, 5)
             x.parent = (x.parent - smallest) * scale + (5, 5)
-            draw.line([x.pos(), x.parent.pos()], fill=0xffffff, width=2)
+            draw.line([x.pos(), x.parent.pos()], fill=0xffffff, width=_width)
 
     for x in tree:
         colour = [0x0000ff, 0x00ff00, 0xff0000, 0xff00ff][tree[x]]
         x = (x - smallest) * scale + (5, 5)
-        draw.ellipse([(x.x_pos - 1, x.y_pos - 1), (x.x_pos + 1, x.y_pos + 1)], fill=colour)
+        draw.ellipse([(x.x_pos - 0.5 * _width, x.y_pos - 0.5 * _width), (x.x_pos + 0.5 * _width, x.y_pos + 0.5 * _width)], fill=colour)
 
     print(f"splits {len([x for x in tree if tree[x] == 0])}, long {len([x for x in tree if tree[x] == 3])}, short {len([x for x in tree if tree[x] == 2])}, total {len(tree)}")
 
