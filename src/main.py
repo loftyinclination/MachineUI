@@ -5,6 +5,10 @@ import random
 import math
 from src.classes import Node
 from PIL import Image, ImageDraw, ImageColor
+from pathlib import Path
+
+DEFAULT_MAX_AREA = [10, 10]
+DEFAULT_MAX_LENGTH = 25
 
 def main(cla):
     tree = [Node(None, 0.0, 0.0)]
@@ -28,21 +32,23 @@ def main(cla):
 
     default = [1, math.pi / 4, math.pi / 4, cla.segment, cla.l_var]
 
-    while (_area(tree) < cla.area and set(tree) != set(visited) and sum(tree) < cla.length):
+    while (_area(tree) < cla.area and sum(tree) < cla.length and set(tree) != set(visited)):
         for x in [x for x in tree if (x not in visited)]:
             choice = random.choices(range(len(choices)), weights=weights)[0] #index
             args = choices[choice](default)
             tree += x.split(args[0], args[1], args[2], args[3], args[4])
             visited[x] = choice
+
+    print(f"terminated. reason: area: {_area(tree) < cla.area}, length: {sum(tree) < cla.length}, visited: {set(tree) != set(visited)}\n")
     
-    draw(cla.seed, visited)
+    draw(cla, visited)
 
 def _area(tree):
     x_values = [i.x_pos for i in tree]
     y_values = [i.y_pos for i in tree]
     return [max(x_values) - min(x_values), max(y_values) - min(y_values)]
     
-def draw(seed, tree, scale=100, _width=2):
+def draw(cla, tree, scale=100, _width=2):
     area = tuple(int(x * scale) + 10 for x in _area(tree))
     im = Image.new('RGB', area) #convert type of area to tuple here - fewer checks
     draw = ImageDraw.Draw(im)
@@ -66,17 +72,21 @@ def draw(seed, tree, scale=100, _width=2):
 
     del(draw)
     im = im.transpose(Image.FLIP_TOP_BOTTOM)
-    im.save(f"{seed}.png", format="PNG")
+    
+    filename = ""
+    if cla.length != DEFAULT_MAX_LENGTH:
+        filename = f"_{cla.length}"
+    im.save(Path(f"img\\{cla.seed}{filename}.png", format="PNG"))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Machine UI Generator')
-    parser.add_argument('-a', '--area',        type=float, default=[10, 10], nargs=2, help="max area encompassed")
-    parser.add_argument('-L', '--length',      type=float, default=23, help="max length of tree brances")
+    parser.add_argument('-a', '--area',        type=float, default=DEFAULT_MAX_AREA, nargs=2, help="max area encompassed")
+    parser.add_argument('-L', '--length',      type=float, default=DEFAULT_MAX_LENGTH, help="max length of tree brances")
     parser.add_argument('-S', '--seed',        type=int,   default=random.randrange(2 ** 18))
     parser.add_argument('-b', '--branching',   type=float, default=0.1)
     parser.add_argument('-t', '--terminating', type=float, default=0.3)
     parser.add_argument('-r', '--ratio',       type=float, default=4, help="ratio of long to short segments")
-    parser.add_argument('-l', '--segment',     type=float, default=1)
+    parser.add_argument('-s', '--segment',     type=float, default=1)
     parser.add_argument('-v', '--segment-var', type=float, default=0, dest="l_var")
     cla = parser.parse_args()
 
