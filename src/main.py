@@ -1,7 +1,9 @@
+import sys
+sys.path.append("..")
 import argparse
 import random
 import math
-from classes import Node
+from src.classes import Node
 from PIL import Image, ImageDraw, ImageColor
 
 def main(cla):
@@ -43,7 +45,7 @@ def _area(tree):
     
 def draw(seed, tree):
     scale = 100
-
+    
     # area = tuple(int(x) * scale + 10 for x in _area(tree))
     im = Image.new('RGB', (1010, 1010)) #convert type of area to tuple here - fewer checks
     draw = ImageDraw.Draw(im)
@@ -71,14 +73,14 @@ def draw(seed, tree):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Machine UI Generator')
-    parser.add_argument('-a', '--area',         type=float, default=[10, 10], nargs=2, help="max area encompassed")
-    parser.add_argument('-L', '--length',       type=float, default=23, help="max length of tree brances")
-    parser.add_argument('-S', '--seed',         type=int,   default=random.randrange(2 ** 18))
-    parser.add_argument('-b', '--branching',    type=float, default=0.1)
-    parser.add_argument('-t', '--terminating',  type=float, default=0.3)
-    parser.add_argument('-r', '--ratio',        type=float, default=4, help="ratio of long to short segments")
-    parser.add_argument('-l', '--segment',      type=float, default=1)
-    parser.add_argument('-v', '--segment-var',  type=float, default=0, dest="l_var")
+    parser.add_argument('-a', '--area',        type=float, default=[10, 10], nargs=2, help="max area encompassed")
+    parser.add_argument('-L', '--length',      type=float, default=23, help="max length of tree brances")
+    parser.add_argument('-S', '--seed',        type=int,   default=random.randrange(2 ** 18))
+    parser.add_argument('-b', '--branching',   type=float, default=0.1)
+    parser.add_argument('-t', '--terminating', type=float, default=0.3)
+    parser.add_argument('-r', '--ratio',       type=float, default=4, help="ratio of long to short segments")
+    parser.add_argument('-l', '--segment',     type=float, default=1)
+    parser.add_argument('-v', '--segment-var', type=float, default=0, dest="l_var")
     cla = parser.parse_args()
 
     print(f"seed {cla.seed}; length {cla.segment}, length variance {cla.l_var}")

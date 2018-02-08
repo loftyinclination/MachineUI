@@ -1,5 +1,5 @@
 import sys
-sys.path.append('C:\\Users\\Alastair\\OneDrive\\Documents\\Creative\\Python\\Gen2')
+sys.path.append("..")
 import unittest
 import math
 from src.classes import Node
