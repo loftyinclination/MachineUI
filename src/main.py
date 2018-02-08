@@ -31,9 +31,8 @@ def main(cla):
     while (_area(tree) < cla.area and set(tree) != set(visited) and sum(tree) < cla.length):
         for x in [x for x in tree if (x not in visited)]:
             choice = random.choices(range(len(choices)), weights=weights)[0] #index
-            default = choices[choice](default)
-            # print(default)
-            tree += x.split(default[0], default[1], default[2], default[3], default[4])
+            args = choices[choice](default)
+            tree += x.split(args[0], args[1], args[2], args[3], args[4])
             visited[x] = choice
     
     draw(cla.seed, visited)
@@ -44,8 +43,8 @@ def _area(tree):
     return [max(x_values) - min(x_values), max(y_values) - min(y_values)]
     
 def draw(seed, tree, scale=100, _width=2):
-    # area = tuple(int(x) * scale + 10 for x in _area(tree))
-    im = Image.new('RGB', (1010, 1010)) #convert type of area to tuple here - fewer checks
+    area = tuple(int(x * scale) + 10 for x in _area(tree))
+    im = Image.new('RGB', area) #convert type of area to tuple here - fewer checks
     draw = ImageDraw.Draw(im)
     smallest = Node(None, min([i.x_pos for i in tree]), min([i.y_pos for i in tree]))
     # print(f"bottom left is {smallest}")
