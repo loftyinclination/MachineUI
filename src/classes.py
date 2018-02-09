@@ -98,7 +98,7 @@ class Node(object):
 
         # angle_mag = [n / steps for n in range(-steps, steps) if straight or (n != 0 or n != steps)]
         # angles = [n * math.pi for n in angle_mag if abs(n * math.pi) <= angle]
-        angles = [n * math.pi / steps for n in range(-steps, steps) if (straight or (n != 0 or n != steps)) and (abs(n * math.pi / steps) <= angle)]
+        angles = [n * math.pi / steps for n in range(-steps, steps) if (straight or (n != 0 and n != steps)) and (abs(n * math.pi / steps) <= angle)]
         # print(angles)
 
         new_children = []
