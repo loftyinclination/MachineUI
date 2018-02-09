@@ -13,7 +13,7 @@ DEFAULT_MAX_LENGTH = 25
 def main(cla):
     tree = [Node(None, 0.0, 0.0)]
 
-    tree += tree[0].split(random.randrange(1, 4, 1), math.pi / 4, math.pi / 4, cla.segment, cla.l_var, straight=True)
+    tree += tree[0].split(random.randrange(1, 4, 1), math.pi / 4, math.pi / 4, cla.length_long, cla.variance_long, straight=True)
     visited = {tree[0]: 0}
 
     choices = [
@@ -26,11 +26,11 @@ def main(cla):
     weights = [
         cla.branching,
         cla.terminating, 
-        (1 - (cla.branching + cla.terminating))             / (cla.ratio + 1),
-        (1 - (cla.branching + cla.terminating)) * cla.ratio / (cla.ratio + 1)
+        (1 - (cla.branching + cla.terminating))             / (cla.ratio + 1) if cla.ratio != 0 else 0,
+        (1 - (cla.branching + cla.terminating)) * cla.ratio / (cla.ratio + 1) if cla.ratio != 0 else 1 - (cla.branching + cla.terminating)
     ]
 
-    default = [1, math.pi / 4, math.pi / 4, cla.segment, cla.l_var]
+    default = [1, math.pi / 4, math.pi / 4, cla.length_long, cla.variance_long]
 
     while (_area(tree) < cla.area and sum(tree) < cla.length and set(tree) != set(visited)):
         for x in [x for x in tree if (x not in visited)]:
@@ -64,7 +64,7 @@ def draw(cla, tree, scale=100, _width=2):
             draw.line([x.pos(), x.parent.pos()], fill=0xffffff, width=_width)
 
     for x in tree:
-        colour = [0x0000ff, 0x00ff00, 0xff0000, 0xff00ff][tree[x]]
+        colour = [0x0000ff, 0x00ff00, 0xff0000, 0xff9000][tree[x]]
         x = (x - smallest) * scale + (5, 5)
         draw.ellipse([(x.x_pos - 0.5 * _width, x.y_pos - 0.5 * _width), (x.x_pos + 0.5 * _width, x.y_pos + 0.5 * _width)], fill=colour)
 
@@ -83,14 +83,21 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--area',        type=float, default=DEFAULT_MAX_AREA, nargs=2, help="max area encompassed")
     parser.add_argument('-L', '--length',      type=float, default=DEFAULT_MAX_LENGTH, help="max length of tree brances")
     parser.add_argument('-S', '--seed',        type=int,   default=random.randrange(2 ** 18))
-    parser.add_argument('-b', '--branching',   type=float, default=0.1)
-    parser.add_argument('-t', '--terminating', type=float, default=0.3)
-    parser.add_argument('-r', '--ratio',       type=float, default=4, help="ratio of long to short segments")
-    parser.add_argument('-s', '--segment',     type=float, default=1)
-    parser.add_argument('-v', '--segment-var', type=float, default=0, dest="l_var")
+
+    choices = parser.add_argument_group('node choice probability')
+    choices.add_argument('-b', '--branching',   type=float, default=0.15)
+    choices.add_argument('-t', '--terminating', type=float, default=0.3)
+
+    length = parser.add_argument_group('length settings', description='settings for the two different types of length_longs')
+    length.add_argument('-r', '--ratio', type=float, default=4, help="ratio of long to short length_longs")
+    length.add_argument('-ls', '--length-short',   type=float, default=0.1, dest="length_short")
+    length.add_argument('-ll', '--length-long',    type=float, default=1.0, dest="length_long")
+    length.add_argument('-vs', '--variance-short', type=float, default=0, dest="variance_short")
+    length.add_argument('-vl', '--variance-long',  type=float, default=0, dest="variance_long")
+    
     cla = parser.parse_args()
 
-    print(f"seed {cla.seed}; length {cla.segment}, length variance {cla.l_var}")
+    print(f"seed {cla.seed}; length {cla.length_long}, length variance {cla.variance_long}")
     random.seed(cla.seed)
 
     main(cla)
