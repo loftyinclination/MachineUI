@@ -23,16 +23,14 @@ def main(cla):
         lambda x: x
     ]
 
-    weights = [
-        cla.branching,
-        cla.terminating, 
-        (1 - (cla.branching + cla.terminating))             / (cla.ratio + 1) if cla.ratio != 0 else 0,
-        (1 - (cla.branching + cla.terminating)) * cla.ratio / (cla.ratio + 1) if cla.ratio != 0 else 1 - (cla.branching + cla.terminating)
-    ]
+    weights = _weights(cla.branching, 0, cla.ratio)
 
     default = [1, math.pi / 4, math.pi / 4, cla.length_long, cla.variance_long]
 
     while (_area(tree) < cla.area and sum(tree) < cla.length and set(tree) != set(visited)):
+        if len(tree) >= 5:
+            weights = _weights(cla.branching, cla.terminating, cla.ratio)
+        
         for x in [x for x in tree if (x not in visited)]:
             choice = random.choices(range(len(choices)), weights=weights)[0] #index
             args = choices[choice](default)
@@ -47,7 +45,15 @@ def _area(tree):
     x_values = [i.x_pos for i in tree]
     y_values = [i.y_pos for i in tree]
     return [max(x_values) - min(x_values), max(y_values) - min(y_values)]
-    
+
+def _weights(branching, terminating, ratio):
+    return [
+        branching,
+        terminating, 
+        (1 - (branching + terminating))         / (ratio + 1) if ratio != 0 else 0,
+        (1 - (branching + terminating)) * ratio / (ratio + 1) if ratio != 0 else 1 - (branching + terminating)
+    ]
+
 def draw(cla, tree, scale=100, _width=2):
     area = tuple(int(x * scale) + 10 for x in _area(tree))
     im = Image.new('RGB', area) #convert type of area to tuple here - fewer checks
