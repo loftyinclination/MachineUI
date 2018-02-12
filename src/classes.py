@@ -9,6 +9,7 @@ class Node(object):
         self.x_pos = float(x_pos)
         self.y_pos = float(y_pos)
         self.children = []
+        self.PRECISION = 12
 
     def __repr__(self):
         return f"Node({self.parent}, {self.x_pos}, {self.y_pos})"
@@ -19,27 +20,36 @@ class Node(object):
         else:
             return f"Node(Node({self.parent.x_pos:.4}, {self.parent.y_pos:.4}), {self.x_pos:.4}, {self.y_pos:.4})"
 
-    def __add__(self, object):
-        if type(object) == tuple:
-            return Node(self.parent, self.x_pos + object[0], self.y_pos + object[1])
-        elif type(object) == Node:
-            return Node(self.parent, self.x_pos + object.x_pos, self.y_pos + object.y_pos)
-        elif isinstance(object, numbers.Number):
-            return abs(self) + object
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.parent == other.parent and round(self.x_pos - other.x_pos, self.PRECISION) == 0 and round(self.y_pos - other.y_pos, self.PRECISION) == 0
+
+    def __ne__(self, other):
+        return not isinstance(other, self__class__) and self.parent != other.parent and round(self.x_pos - other.x_pos, self.PRECISION) != 0 and round(self.y_pos - other.y_pos, self.PRECISION) != 0
+
+    def __hash__(self):
+        return hash((round(self.x_pos, self.PRECISION), round(self.y_pos, self.PRECISION), hash(self.parent)))
+
+    def __add__(self, other):
+        if type(other) == tuple:
+            return Node(self.parent, self.x_pos + other[0], self.y_pos + other[1])
+        elif isinstance(other, self.__class__):
+            return Node(self.parent, self.x_pos + other.x_pos, self.y_pos + other.y_pos)
+        elif isinstance(other, numbers.Number):
+            return abs(self) + other
         else:
             raise TypeError
     
-    def __radd__(self, object):
-        if isinstance(object, numbers.Number):
-            return abs(self) + object
+    def __radd__(self, other):
+        if isinstance(other, numbers.Number):
+            return abs(self) + other
         else:
             raise TypeError
 
-    def __sub__(self, object):
-        if type(object) == tuple:
-            return Node(self.parent, self.x_pos - object[0], self.y_pos - object[1])
-        elif type(object) == Node:
-            return Node(self.parent, self.x_pos - object.x_pos, self.y_pos - object.y_pos)
+    def __sub__(self, other):
+        if type(other) == tuple:
+            return Node(self.parent, self.x_pos - other[0], self.y_pos - other[1])
+        elif type(other) == Node:
+            return Node(self.parent, self.x_pos - other.x_pos, self.y_pos - other.y_pos)
         else:
             raise TypeError
 

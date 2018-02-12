@@ -6,6 +6,20 @@ from src.classes import Node
 
 class classes_Test(unittest.TestCase):
 
+    def test_equality(self):
+        centre = Node(None, 0, 0)
+        c1 = Node(centre, math.cos(math.pi / 2), math.sin(math.pi / 2))
+        n1 = Node(centre, 0, 1)
+        self.assertEqual(c1, n1)
+
+        c2 = Node(centre, math.cos(0), math.sin(0))
+        n2 = Node(centre, 1, 0)
+        self.assertEqual(c2, n2)
+
+    def test_addition(self):
+        centre = Node(None, 0, 0)
+        self.assertEqual(Node(None, 1, 1), centre + Node(None, 1, 1))
+
     def test_direction(self):
         steps = 30
         angles = [i * (2 * math.pi / steps) for i in range(steps)]
@@ -35,6 +49,15 @@ class classes_Test(unittest.TestCase):
             Node(centre, 1,  -1),
             Node(centre, x2, -y)
         ]
+    
+    def test_split_short_args(self):
+        # args = lambda x: [1, x[1], x[2], 0.1,  0]
+        # default = [1, math.pi / 4, math.pi / 4, cla.length_long, cla.variance_long]
+        centre = Node(Node(None, 0, 0), 1, 1)
+        for i in range(3, 9):
+            self.assertRaises(IndexError, centre.split, i, math.pi / 4, math.pi / 4, 0.1, 0, straight=False)
+        
+        self.assertSetEqual(set(centre.split(2, math.pi / 4, math.pi / 4, 0.1, 0, straight=False)), set([Node(centre, 1.1, 1), Node(centre, 1, 1.1)]))
 
 if __name__ == '__main__':
     unittest.main()
