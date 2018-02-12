@@ -34,12 +34,17 @@ def main(cla):
         for x in [x for x in tree if (x not in visited)]:
             choice = random.choices(range(len(choices)), weights=weights)[0] #index
             args = choices[choice](default)
-            tree += x.split(args[0], args[1], args[2], args[3], args[4])
+            if cla.debug:
+                print(f"currently splitting: x: {x.x_pos}, y: {x.y_pos}")
+            tree += x.split(args[0], args[1], args[2], args[3], args[4], debug=cla.debug)
             visited[x] = choice
 
     print(f"terminated. reason: area: {_area(tree) < cla.area}, length: {sum(tree) < cla.length}, visited: {set(tree) != set(visited)}\n")
     
     draw(cla, visited)
+    if cla.debug:
+        for i in tree:
+            print(str(i))
 
 def _area(tree):
     x_values = [i.x_pos for i in tree]
@@ -89,9 +94,10 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--area',        type=float, default=DEFAULT_MAX_AREA, nargs=2, help="max area encompassed")
     parser.add_argument('-L', '--length',      type=float, default=DEFAULT_MAX_LENGTH, help="max length of tree brances")
     parser.add_argument('-S', '--seed',        type=int,   default=random.randrange(2 ** 18))
+    parser.add_argument('-D', '--debug',       action="store_true")
 
     choices = parser.add_argument_group('node choice probability')
-    choices.add_argument('-b', '--branching',   type=float, default=0.15)
+    choices.add_argument('-b', '--branching',   type=float, default=0.1)
     choices.add_argument('-t', '--terminating', type=float, default=0.3)
 
     length = parser.add_argument_group('length settings', description='settings for the two different types of length_longs')
