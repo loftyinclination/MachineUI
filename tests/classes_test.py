@@ -25,6 +25,18 @@ class classes_Test(unittest.TestCase):
         angles = [i * (2 * math.pi / steps) for i in range(steps)]
         for d in angles:
             self.assertAlmostEqual(Node(Node(None, 0, 0), math.cos(d), math.sin(d)).get_direction(), d)
+    
+    def test_direction_relative(self):
+        n0 = Node(Node(None, 0, 0), 1, 0)
+        self.assertAlmostEqual(Node(n0, 1, 1).get_direction(), math.pi / 2)
+        self.assertAlmostEqual(Node(n0, 2, 0).get_direction(), 0)
+        self.assertAlmostEqual(Node(n0, 0, 0).get_direction(), math.pi)
+        self.assertAlmostEqual(Node(n0, 1,-1).get_direction(), math.pi * 1.5)
+
+        self.assertAlmostEqual(Node(n0, 1.923879532511, 0.382683432365).get_direction(), math.pi * 0.125)
+        self.assertAlmostEqual(Node(n0, 0.076120467488, 0.382683432365).get_direction(), math.pi * 0.875)
+        self.assertAlmostEqual(Node(n0, 0.076120467488,-0.382683432365).get_direction(), math.pi * 1.125)
+        self.assertAlmostEqual(Node(n0, 1.923879532511,-0.382683432365).get_direction(), math.pi * 1.875)
 
     def test_split_parentless(self):
         centre = Node(None, 0, 0)

@@ -74,22 +74,37 @@ class Node(object):
     def get_direction(self):
         if self.parent is None:
             return None
-        elif (self.parent.x_pos == self.x_pos):
-            if (self.parent.y_pos > self.y_pos):
-                return math.pi * 0.5
-            else:
-                return math.pi * 1.5    
         else:
-            theta = math.atan((self.parent.y_pos - self.y_pos) / (self.parent.x_pos - self.x_pos))
-            # print(f"theta {theta},
-            #       p.x {self.parent.x_pos}, x {self.x_pos},
-            #       p.y {self.parent.y_pos}, y {self.y_pos}")
-            if (self.parent.x_pos > self.x_pos) and (self.parent.y_pos < self.y_pos):
-                return math.pi + theta
-            elif (self.parent.x_pos > self.x_pos) and (self.parent.y_pos > self.y_pos):
-                return math.pi + theta
-            elif (self.parent.x_pos < self.x_pos) and (self.parent.y_pos > self.y_pos):
-                return math.pi * 2 + theta
+            if self.parent.x_pos == self.x_pos:
+                theta = 0
+            else: 
+                theta = math.atan((self.y_pos - self.parent.y_pos) / (self.x_pos - self.parent.x_pos))
+            
+            if self.parent.y_pos == self.y_pos:
+                if self.parent.x_pos > self.x_pos:
+                    theta = math.pi
+                else:
+                    theta = 0
+            elif self.parent.y_pos < self.y_pos:
+                if self.parent.x_pos < self.x_pos:
+                    pass
+                elif self.parent.x_pos == self.x_pos:
+                    theta = math.pi / 2
+                else:
+                    theta += math.pi
+            elif self.parent.y_pos > self.y_pos:
+                if self.parent.x_pos > self.x_pos:
+                    theta += math.pi
+                elif self.parent.x_pos == self.x_pos:
+                    theta = math.pi * 1.5
+                else:
+                    theta += 2 * math.pi
+            # if (self.parent.x_pos > self.x_pos) and (self.parent.y_pos < self.y_pos):
+            #     return math.pi + theta
+            # elif (self.parent.x_pos > self.x_pos) and (self.parent.y_pos > self.y_pos):
+            #     return math.pi + theta
+            # elif (self.parent.x_pos < self.x_pos) and (self.parent.y_pos > self.y_pos):
+            #     return math.pi * 2 + theta
             return theta
 
     def set_position_polar(self, norm, theta):
@@ -99,7 +114,7 @@ class Node(object):
         self.x_pos = self.parent.x_pos + (norm * math.cos(theta + parent_theta))
         self.y_pos = self.parent.y_pos + (norm * math.sin(theta + parent_theta))
 
-    def split(self, children, angle, angle_step, length, length_var, straight=False):
+    def split(self, children, angle, angle_step, length, length_var, straight=False, debug=False):
         """produce {children} new nodes, with {self} as parent
            angle: +ve max value of angle from current direction.
            angle_step: angle can have values of n * angle_step
@@ -119,8 +134,12 @@ class Node(object):
             new_direction = random.choice(angles)
             new_length = random.gauss(length, length_var)
             angles.remove(new_direction)
+            if debug: 
+                print(f"direction (relative): {new_direction}, length: {length}")
 
             new_child.set_position_polar(new_length, new_direction)
+            if debug:
+                print(f"direction (check): {(new_child.get_direction() + self.get_direction()) % (2 * math.pi)}")
             self.add_child(new_child)
             new_children.append(new_child)
 
